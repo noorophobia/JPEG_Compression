@@ -63,7 +63,8 @@ def decode(data, shape, color=True):
                 else:
                     arr.append(val)
             blk = zigzagAlgo(arr)
-            blk = blk * Quanttable
+            q_table = Quanttable if len(chs) == 0 else np.maximum(Quanttable // 2, 1)
+            blk = blk * q_table
             blk = inversedct(blk, mat) + 128
             blocks.append(np.clip(blk, 0, 255))
         img = np.zeros((h, w), dtype=np.uint8)
@@ -88,17 +89,17 @@ def decode(data, shape, color=True):
             merged_img = cv2.merge([y, cr, cb])  
             return cv2.cvtColor(merged_img, cv2.COLOR_YCrCb2RGB)
     return chs[0]
-
 Quanttable = np.array([
-    [17, 12, 10, 18, 25, 39, 50, 60],
-    [11, 13, 14, 20, 28, 57, 62, 54],
-    [14, 14, 17, 23, 38, 58, 70, 55],
-    [15, 18, 22, 31, 50, 85, 81, 63],
-    [19, 23, 36, 55, 67, 108, 102, 78],
-    [25, 34, 54, 65, 82, 103, 114, 91],
-    [48, 65, 77, 88, 104, 122, 121, 100],
-    [71, 93, 96, 97, 111, 99, 102, 98]
+    [16, 11, 10, 16, 24,  40,  51,  61],
+    [12, 12, 14, 19, 26,  58,  60,  55],
+    [14, 13, 16, 24, 40,  57,  69,  56],
+    [14, 17, 22, 29, 51,  87,  80,  62],
+    [18, 22, 37, 56, 68, 109, 103,  77],
+    [24, 35, 55, 64, 81, 104, 113,  92],
+    [49, 64, 78, 87,103, 121, 120, 101],
+    [72, 92, 95, 98,112, 100, 103,  99]
 ])
+
 
 class Decoder:
     def __init__(self, master):
